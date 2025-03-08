@@ -410,52 +410,59 @@
       const faceDiv = document.createElement("div");
       faceDiv.className = "face active";
       
-      if(isTest) {
-        if(currentFaceIndex === 0) {
-          faceDiv.innerHTML = `<div class="content">
+if(isTest) {
+    if(currentFaceIndex === 0) {
+        faceDiv.innerHTML = `<div class="content">
             <h2>${currentQuestion.pregunta}</h2>
             <div class="options"></div>
             <div class="feedback"></div>
-          </div>`;
-          const optionsDiv = faceDiv.querySelector(".options");
-          const options = currentQuestion.respuesta.split("/");
-          options.forEach((opt, idx) => {
+        </div>`;
+        
+        const optionsDiv = faceDiv.querySelector(".options");
+        let options = currentQuestion.respuesta.split("/");
+
+        // Mezclar opciones aleatoriamente
+        let shuffledOptions = options
+            .map((option, index) => ({ text: option.trim(), isCorrect: index === 0 })) // Marcar la opción correcta
+            .sort(() => Math.random() - 0.5); // Desordenar aleatoriamente
+
+        shuffledOptions.forEach((opt) => {
             const btn = document.createElement("button");
-            btn.textContent = opt.trim();
+            btn.textContent = opt.text;
             btn.onclick = () => {
-              const feedback = faceDiv.querySelector(".feedback");
-              if(idx === 0) {
-                feedback.textContent = "¡Correcto!";
-              } else {
-                feedback.textContent = "Incorrecto. La respuesta correcta es: " + options[0].trim();
-              }
+                const feedback = faceDiv.querySelector(".feedback");
+                if(opt.isCorrect) {
+                    feedback.textContent = "¡Correcto!";
+                } else {
+                    feedback.textContent = `Incorrecto. La respuesta correcta es: ${options[0].trim()}`;
+                }
             };
             optionsDiv.appendChild(btn);
-          });
-        } else if(currentFaceIndex === 1) {
-          faceDiv.classList.add("explanation");
-          faceDiv.innerHTML = `<div class="content">
+        });
+
+    } else if(currentFaceIndex === 1) {
+        faceDiv.classList.add("explanation");
+        faceDiv.innerHTML = `<div class="content">
             <h3>Explicación</h3>
             <p>${currentQuestion.explicacion}</p>
-          </div>`;
-        }
-      } else {
-        if(currentFaceIndex === 0) {
-          faceDiv.innerHTML = `<div class="content"><h2>${currentQuestion.pregunta}</h2></div>`;
-        } else if(currentFaceIndex === 1) {
-          faceDiv.innerHTML = `<div class="content"><h2>${currentQuestion.respuesta}</h2></div>`;
-        } else if(currentFaceIndex === 2) {
-          faceDiv.classList.add("explanation");
-          faceDiv.innerHTML = `<div class="content">
-            <h3>Explicación</h3>
-            <p>${currentQuestion.explicacion}</p>
-          </div>`;
-        }
-      }
-      central.appendChild(faceDiv);
-      updateTopPanelHighlight();
+        </div>`;
     }
-    
+} else { // Para flashcards
+    if(currentFaceIndex === 0) {
+        faceDiv.innerHTML = `<div class="content"><h2>${currentQuestion.pregunta}</h2></div>`;
+    } else if(currentFaceIndex === 1) {
+        faceDiv.innerHTML = `<div class="content"><h2>${currentQuestion.respuesta}</h2></div>`;
+    } else if(currentFaceIndex === 2) {
+        faceDiv.classList.add("explanation");
+        faceDiv.innerHTML = `<div class="content">
+            <h3>Explicación</h3>
+            <p>${currentQuestion.explicacion}</p>
+        </div>`;
+    }
+}
+central.appendChild(faceDiv);
+updateTopPanelHighlight();
+}    
     function updateTopPanelHighlight() {
       const topPanel = document.getElementById("studyTopPanel");
       Array.from(topPanel.children).forEach((child, idx) => {
